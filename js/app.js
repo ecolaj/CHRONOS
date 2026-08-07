@@ -154,23 +154,14 @@
 
     dateLabel.textContent = formatDate(now);
 
-    // Orbital progress arc and marker positions
-    if (isElapsed) {
-      // Transcurrido: Arc starts at 12 o'clock (-90deg), goes clockwise to current fraction
-      progressArc.style.transform = 'rotate(-90deg) scaleX(1)';
-      progressArc.style.strokeDashoffset = CIRC * (1 - fraction);
+    // Orbital progress arc and marker position
+    // Value represents the percentage to display starting from 12 o'clock (-90deg)
+    const val = isElapsed ? fraction : (1 - fraction);
+    
+    progressArc.style.strokeDashoffset = CIRC * (1 - val);
 
-      if (mover) {
-        mover.style.transform = `rotate(${fraction * 360}deg)`;
-      }
-    } else {
-      // Restante: Arc starts at 12 o'clock (-90deg), goes counter-clockwise (in reverse) to current fraction
-      progressArc.style.transform = 'rotate(-90deg) scaleX(-1)';
-      progressArc.style.strokeDashoffset = CIRC * fraction;
-
-      if (mover) {
-        mover.style.transform = `rotate(${-(1 - fraction) * 360}deg)`;
-      }
+    if (mover) {
+      mover.style.transform = `rotate(${val * 360}deg)`;
     }
 
     if (markStart) {
