@@ -40,6 +40,7 @@
   const subStats = $('subStats');
   const dateLabel = $('dateLabel');
   const progressArc = $('progressArc');
+  const markStart = $('markStart');
   const mover = $('mover');
   const ticksGroup = $('ticks');
   const themeGrid = $('themeGrid');
@@ -153,27 +154,26 @@
 
     dateLabel.textContent = formatDate(now);
 
-    // The ring/mover always reflect real calendar progress (fraction of the
-    // year elapsed), so the orbit always advances forward regardless of mode.
-    const offset = CIRC * (1 - fraction);
-    progressArc.style.strokeDashoffset = offset;
-  }
+    // Orbital progress arc and marker positions
+    const startAngle = isElapsed ? 0 : fraction * 360;
+    const endAngle = isElapsed ? fraction * 360 : 360;
 
-  /* fix mover positioning cleanly (simpler approach) */
-  // The static circle in the markup sits at (160, 20) — the top of the ring.
-  const MOVER_ORIGIN = { x: 160, y: 20 };
-  function positionMover(fraction) {
-    const angle = fraction * 2 * Math.PI - Math.PI / 2;
-    const mx = 160 + Math.cos(angle) * 140;
-    const my = 160 + Math.sin(angle) * 140;
-    mover.setAttribute('transform', `translate(${mx - MOVER_ORIGIN.x} ${my - MOVER_ORIGIN.y})`);
+    const arcRotation = -90 + (isElapsed ? 0 : fraction * 360);
+    const arcOffset = CIRC * (1 - (isElapsed ? fraction : 1 - fraction));
+
+    progressArc.style.transform = `rotate(${arcRotation}deg)`;
+    progressArc.style.strokeDashoffset = arcOffset;
+
+    if (markStart) {
+      markStart.style.transform = `rotate(${startAngle}deg)`;
+    }
+    if (mover) {
+      mover.style.transform = `rotate(${endAngle}deg)`;
+    }
   }
 
   function renderAll() {
-    const now = new Date();
-    const { fraction } = getYearProgress(now);
     render();
-    positionMover(fraction);
   }
 
   /* ---------------- Mode switching ---------------- */

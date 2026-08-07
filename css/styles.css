@@ -132,14 +132,17 @@ body[data-theme="marea"] {
   stroke: url(#arcGradient);
   stroke-width: 3.5;
   stroke-linecap: round;
-  transform: rotate(-90deg);
+  transform-box: view-box;
   transform-origin: 160px 160px;
-  transition: stroke-dashoffset .6s cubic-bezier(.4,0,.2,1);
+  transition: transform .6s cubic-bezier(.4,0,.2,1), stroke-dashoffset .6s cubic-bezier(.4,0,.2,1);
 }
 
 .mark-start {
-  fill: var(--text-muted);
-  opacity: .5;
+  fill: var(--accent-a);
+  opacity: .7;
+  transform-box: view-box;
+  transform-origin: 160px 160px;
+  transition: transform .6s cubic-bezier(.4,0,.2,1), fill .5s ease, opacity .5s ease;
 }
 
 .tick {
@@ -148,7 +151,11 @@ body[data-theme="marea"] {
   stroke-width: 1.5;
 }
 
-#mover { transition: transform .6s cubic-bezier(.4,0,.2,1); }
+#mover {
+  transform-box: view-box;
+  transform-origin: 160px 160px;
+  transition: transform .6s cubic-bezier(.4,0,.2,1);
+}
 .mover-dot {
   fill: var(--accent-a);
 }
