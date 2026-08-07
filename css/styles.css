@@ -71,6 +71,66 @@ body[data-theme="marea"] {
   --star-color: 231, 246, 242;
 }
 
+/* Terracota */
+body[data-theme="terracota"] {
+  --bg: #181110;
+  --bg-elevated: #241B19;
+  --text: #F7EBE8;
+  --text-muted: #A68A85;
+  --track: #362724;
+  --accent-a: #E07A5F;
+  --accent-b: #F2A65A;
+  --star-color: 247, 235, 232;
+}
+
+/* Amatista */
+body[data-theme="amatista"] {
+  --bg: #120E1E;
+  --bg-elevated: #1D172E;
+  --text: #F0EBF8;
+  --text-muted: #8E82A6;
+  --track: #2B2240;
+  --accent-a: #B388FF;
+  --accent-b: #7C4DFF;
+  --star-color: 240, 235, 248;
+}
+
+/* Marfil */
+body[data-theme="marfil"] {
+  --bg: #F4F0EA;
+  --bg-elevated: #FFFFFF;
+  --text: #23201D;
+  --text-muted: #8C847B;
+  --track: #E2DCD4;
+  --accent-a: #9E6B38;
+  --accent-b: #C49258;
+  --star-color: 158, 107, 56;
+}
+
+/* Bosque */
+body[data-theme="bosque"] {
+  --bg: #0A140E;
+  --bg-elevated: #122118;
+  --text: #E8F5E9;
+  --text-muted: #73967C;
+  --track: #1B3324;
+  --accent-a: #52B788;
+  --accent-b: #74C69D;
+  --star-color: 232, 245, 233;
+}
+
+/* Granate */
+body[data-theme="granate"] {
+  --bg: #180C14;
+  --bg-elevated: #261420;
+  --text: #FADEEA;
+  --text-muted: #9E7B8B;
+  --track: #3B1C30;
+  --accent-a: #E65C8A;
+  --accent-b: #FF8DA1;
+  --star-color: 250, 222, 234;
+}
+
 /* ---------- Starfield ---------- */
 #stars {
   position: fixed; inset: 0; width: 100%; height: 100%;

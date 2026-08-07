@@ -30,6 +30,11 @@
     { id: 'papel',      name: 'Papel',      bg: '#F7F5F0', a: '#2D5B4E' },
     { id: 'terminal',   name: 'Terminal',   bg: '#05070A', a: '#7CFC9A' },
     { id: 'marea',      name: 'Marea',      bg: '#071A22', a: '#4ECDC4' },
+    { id: 'terracota', name: 'Terracota',  bg: '#181110', a: '#E07A5F' },
+    { id: 'amatista',  name: 'Amatista',   bg: '#120E1E', a: '#B388FF' },
+    { id: 'marfil',    name: 'Marfil',     bg: '#F4F0EA', a: '#9E6B38' },
+    { id: 'bosque',    name: 'Bosque',     bg: '#0A140E', a: '#52B788' },
+    { id: 'granate',   name: 'Granate',    bg: '#180C14', a: '#E65C8A' },
   ];
 
   /* ---------------- Elements ---------------- */
@@ -84,6 +89,7 @@
       el.className = 'theme-swatch' + (t.id === settings.theme ? ' active' : '');
       el.style.background = t.bg;
       el.setAttribute('aria-label', t.name);
+      el.setAttribute('title', t.name);
       el.dataset.theme = t.id;
       const dot = document.createElement('span');
       dot.className = 'theme-swatch-dot';
