@@ -1,4 +1,4 @@
-# Órbita — progreso del año
+# Chronos — progreso del año
 
 App web (PWA) que muestra, en tiempo real, qué porcentaje del año ha transcurrido — o qué porcentaje falta — a partir de la fecha y hora del propio dispositivo. Funciona igual en iOS y Android porque corre dentro del navegador, pero se instala como una app real (ícono en el home, pantalla completa, sin barra de navegador).
 

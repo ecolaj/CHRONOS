@@ -1,4 +1,4 @@
-const CACHE_NAME = 'orbita-cache-v1';
+const CACHE_NAME = 'chronos-cache-v1';
 const ASSETS = [
   './',
   './index.html',

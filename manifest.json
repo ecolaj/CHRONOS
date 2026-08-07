@@ -1,6 +1,6 @@
 {
-  "name": "Órbita — progreso del año",
-  "short_name": "Órbita",
+  "name": "Chronos — progreso del año",
+  "short_name": "Chronos",
   "description": "Cuánto del año ha pasado. Cuánto queda.",
   "start_url": "./index.html",
   "scope": "./",

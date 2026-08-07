@@ -2,7 +2,7 @@
   'use strict';
 
   /* ---------------- Storage ---------------- */
-  const STORAGE_KEY = 'orbita-settings-v1';
+  const STORAGE_KEY = 'chronos-settings-v1';
   const defaults = {
     mode: 'elapsed',       // 'elapsed' | 'remaining'
     theme: 'medianoche',
@@ -15,7 +15,7 @@
 
   function loadSettings() {
     try {
-      const raw = localStorage.getItem(STORAGE_KEY);
+      const raw = localStorage.getItem(STORAGE_KEY) || localStorage.getItem('orbita-settings-v1');
       return raw ? JSON.parse(raw) : {};
     } catch (e) { return {}; }
   }
