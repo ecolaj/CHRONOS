@@ -129,6 +129,68 @@
     return `${now.getDate()} de ${monthsEs[now.getMonth()]} de ${now.getFullYear()}`;
   }
 
+  /* ---------------- Orbit Animation Engine ---------------- */
+  let currentVal = null;
+  let targetVal = 0;
+  let animRafId = null;
+
+  function updateOrbitVisuals(val) {
+    progressArc.style.strokeDashoffset = CIRC * (1 - val);
+    if (mover) {
+      mover.style.transform = `rotate(${val * 360}deg)`;
+    }
+  }
+
+  function animateOrbitTo(newTargetVal) {
+    const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    targetVal = newTargetVal;
+
+    // First load or reduced motion: update immediately
+    if (currentVal === null || reduceMotion) {
+      currentVal = targetVal;
+      updateOrbitVisuals(currentVal);
+      return;
+    }
+
+    const diff = Math.abs(currentVal - targetVal);
+
+    // Minor update (standard 1s interval tick), set directly without animation overhead
+    if (diff < 0.001) {
+      currentVal = targetVal;
+      updateOrbitVisuals(currentVal);
+      return;
+    }
+
+    if (animRafId) cancelAnimationFrame(animRafId);
+
+    const startVal = currentVal;
+    const startTime = performance.now();
+    const duration = 450; // Smooth 450ms transition
+
+    function easeOutCubic(x) {
+      return 1 - Math.pow(1 - x, 3);
+    }
+
+    function step(now) {
+      const elapsed = now - startTime;
+      const progress = Math.min(1, elapsed / duration);
+      const eased = easeOutCubic(progress);
+
+      currentVal = startVal + (targetVal - startVal) * eased;
+      updateOrbitVisuals(currentVal);
+
+      if (progress < 1) {
+        animRafId = requestAnimationFrame(step);
+      } else {
+        currentVal = targetVal;
+        updateOrbitVisuals(currentVal);
+        animRafId = null;
+      }
+    }
+
+    animRafId = requestAnimationFrame(step);
+  }
+
   /* ---------------- Render ---------------- */
   function render() {
     const now = new Date();
@@ -163,16 +225,7 @@
     // Orbital progress arc and marker position
     // Value represents the percentage to display starting from 12 o'clock (-90deg)
     const val = isElapsed ? fraction : (1 - fraction);
-    
-    progressArc.style.strokeDashoffset = CIRC * (1 - val);
-
-    if (mover) {
-      mover.style.transform = `rotate(${val * 360}deg)`;
-    }
-
-    if (markStart) {
-      markStart.style.transform = 'rotate(0deg)';
-    }
+    animateOrbitTo(val);
   }
 
   function renderAll() {

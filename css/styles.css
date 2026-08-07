@@ -195,7 +195,6 @@ body[data-theme="granate"] {
   transform: rotate(-90deg);
   transform-box: view-box;
   transform-origin: 160px 160px;
-  transition: stroke-dashoffset .6s cubic-bezier(.4,0,.2,1);
 }
 
 .mark-start {
@@ -203,7 +202,7 @@ body[data-theme="granate"] {
   opacity: .7;
   transform-box: view-box;
   transform-origin: 160px 160px;
-  transition: transform .6s cubic-bezier(.4,0,.2,1), fill .5s ease, opacity .5s ease;
+  transition: fill .5s ease, opacity .5s ease;
 }
 
 .tick {
@@ -215,7 +214,6 @@ body[data-theme="granate"] {
 #mover {
   transform-box: view-box;
   transform-origin: 160px 160px;
-  transition: transform .6s cubic-bezier(.4,0,.2,1);
 }
 .mover-dot {
   fill: var(--accent-a);
