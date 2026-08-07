@@ -1,0 +1,8 @@
+{
+  "name": "Órbita",
+  "description": "Visualizador del progreso del año transcurrido y restante con personalización de temas y alta precisión.",
+  "requestFramePermissions": [],
+  "majorCapabilities": [
+    "MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"
+  ]
+}

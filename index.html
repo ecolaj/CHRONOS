@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover, user-scalable=no">
+<title>Órbita — progreso del año</title>
+<meta name="description" content="Cuánto del año ha pasado. Cuánto queda.">
+<meta name="theme-color" content="#0B0F19">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Órbita">
+<link rel="manifest" href="manifest.json">
+<link rel="apple-touch-icon" href="icons/apple-touch-icon.png">
+<link rel="icon" href="icons/icon-192.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700&family=Sora:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="css/styles.css">
+</head>
+<body data-theme="medianoche">
+
+  <canvas id="stars" aria-hidden="true"></canvas>
+
+  <div class="app">
+
+    <header class="topbar">
+      <div class="date-pill">
+        <span id="dateLabel">—</span>
+      </div>
+      <button class="icon-btn" id="settingsBtn" aria-label="Ajustes">
+        <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
+          <circle cx="12" cy="12" r="3.2"/>
+          <path d="M19.4 13.5a1.7 1.7 0 0 0 .34 1.87l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.7 1.7 0 0 0-1.87-.34 1.7 1.7 0 0 0-1.04 1.56V19.6a2 2 0 1 1-4 0v-.09a1.7 1.7 0 0 0-1.04-1.56 1.7 1.7 0 0 0-1.87.34l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.7 1.7 0 0 0 .34-1.87 1.7 1.7 0 0 0-1.56-1.04H4.4a2 2 0 1 1 0-4h.09A1.7 1.7 0 0 0 6.05 6.4a1.7 1.7 0 0 0-.34-1.87l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.7 1.7 0 0 0 1.87.34H10.5A1.7 1.7 0 0 0 11.54 3v-.09a2 2 0 1 1 4 0V3a1.7 1.7 0 0 0 1.04 1.56 1.7 1.7 0 0 0 1.87-.34l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.7 1.7 0 0 0-.34 1.87V9.5a1.7 1.7 0 0 0 1.56 1.04h.09a2 2 0 1 1 0 4h-.09a1.7 1.7 0 0 0-1.56 1.04Z"/>
+        </svg>
+      </button>
+    </header>
+
+    <main class="stage">
+      <div class="orbit-wrap">
+        <svg class="orbit" id="orbitSvg" viewBox="0 0 320 320" aria-hidden="true">
+          <defs>
+            <linearGradient id="arcGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+              <stop offset="0%" stop-color="var(--accent-a)"/>
+              <stop offset="100%" stop-color="var(--accent-b)"/>
+            </linearGradient>
+            <filter id="glow" x="-60%" y="-60%" width="220%" height="220%">
+              <feGaussianBlur stdDeviation="4.5" result="blur"/>
+              <feMerge>
+                <feMergeNode in="blur"/>
+                <feMergeNode in="SourceGraphic"/>
+              </feMerge>
+            </filter>
+          </defs>
+
+          <circle class="track" cx="160" cy="160" r="140"/>
+          <g id="ticks"></g>
+          <circle class="progress-arc" id="progressArc" cx="160" cy="160" r="140" filter="url(#glow)"/>
+          <circle class="mark-start" cx="160" cy="20" r="3"/>
+          <g id="mover" filter="url(#glow)">
+            <circle class="mover-dot" cx="160" cy="20" r="6"/>
+          </g>
+        </svg>
+
+        <div class="center-content">
+          <div class="percent" id="percentValue">00<span class="percent-decimals">.00</span><span class="percent-sign">%</span></div>
+          <div class="mode-caption" id="modeCaption">del año transcurrido</div>
+          <div class="sub-stats" id="subStats">día 1 de 365</div>
+        </div>
+      </div>
+
+      <div class="segmented" id="modeSwitch" role="tablist" aria-label="Modo">
+        <button class="segmented-btn active" data-mode="elapsed" role="tab" aria-selected="true">Transcurrido</button>
+        <button class="segmented-btn" data-mode="remaining" role="tab" aria-selected="false">Restante</button>
+      </div>
+    </main>
+
+  </div>
+
+  <!-- Settings sheet -->
+  <div class="sheet-backdrop" id="sheetBackdrop"></div>
+  <section class="sheet" id="sheet" aria-hidden="true">
+    <div class="sheet-handle"></div>
+    <div class="sheet-header">
+      <h2>Ajustes</h2>
+      <button class="icon-btn" id="closeSheetBtn" aria-label="Cerrar">
+        <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M6 6l12 12M18 6L6 18"/></svg>
+      </button>
+    </div>
+
+    <div class="sheet-body">
+
+      <div class="setting-block">
+        <div class="setting-label">Modo</div>
+        <div class="segmented" id="modeSwitchSheet">
+          <button class="segmented-btn active" data-mode="elapsed">Transcurrido</button>
+          <button class="segmented-btn" data-mode="remaining">Restante</button>
+        </div>
+      </div>
+
+      <div class="setting-block">
+        <div class="setting-label">Tema</div>
+        <div class="theme-grid" id="themeGrid"></div>
+      </div>
+
+      <div class="setting-block">
+        <div class="setting-label">Precisión decimal</div>
+        <div class="segmented" id="precisionSwitch">
+          <button class="segmented-btn" data-precision="0">0</button>
+          <button class="segmented-btn active" data-precision="2">2</button>
+          <button class="segmented-btn" data-precision="4">4</button>
+        </div>
+      </div>
+
+      <div class="setting-block row">
+        <div>
+          <div class="setting-label">Mostrar días</div>
+          <div class="setting-hint">Ej. «día 148 de 365»</div>
+        </div>
+        <label class="switch">
+          <input type="checkbox" id="showDaysToggle" checked>
+          <span class="switch-track"><span class="switch-thumb"></span></span>
+        </label>
+      </div>
+
+      <div class="setting-block row">
+        <div>
+          <div class="setting-label">Cielo animado</div>
+          <div class="setting-hint">Estrellas de fondo con movimiento sutil</div>
+        </div>
+        <label class="switch">
+          <input type="checkbox" id="animatedSkyToggle" checked>
+          <span class="switch-track"><span class="switch-thumb"></span></span>
+        </label>
+      </div>
+
+      <div class="setting-block row">
+        <div>
+          <div class="setting-label">Mantener pantalla encendida</div>
+          <div class="setting-hint">Evita que el dispositivo se bloquee</div>
+        </div>
+        <label class="switch">
+          <input type="checkbox" id="wakeLockToggle">
+          <span class="switch-track"><span class="switch-thumb"></span></span>
+        </label>
+      </div>
+
+      <div class="footer-note">Órbita calcula el año en curso a partir de la fecha y hora de tu dispositivo.</div>
+    </div>
+  </section>
+
+  <script src="js/app.js"></script>
+</body>
+</html>
