@@ -295,6 +295,10 @@
         r: (Math.random() * 1.3 + 0.3) * devicePixelRatio,
         phase: Math.random() * Math.PI * 2,
         speed: Math.random() * 0.4 + 0.15,
+        vx: (Math.random() * 0.03 + 0.01) * devicePixelRatio,
+        vy: -(Math.random() * 0.025 + 0.008) * devicePixelRatio,
+        swayAmp: (Math.random() * 1.2 + 0.4) * devicePixelRatio,
+        swayFreq: Math.random() * 0.0006 + 0.0003,
       }));
     }
 
@@ -307,10 +311,25 @@
       ctx.clearRect(0, 0, canvas.width, canvas.height);
       const color = getStarColor();
       for (const s of stars) {
-        const twinkle = reduceMotion ? 0.6 : 0.4 + 0.6 * Math.abs(Math.sin(t * 0.0005 * s.speed + s.phase));
+        if (!reduceMotion) {
+          s.x += s.vx;
+          s.y += s.vy;
+          if (s.x > canvas.width + 10) s.x = -10;
+          if (s.x < -10) s.x = canvas.width + 10;
+          if (s.y < -10) s.y = canvas.height + 10;
+          if (s.y > canvas.height + 10) s.y = -10;
+        }
+
+        const swayX = reduceMotion ? 0 : Math.sin(t * s.swayFreq + s.phase) * s.swayAmp;
+        const swayY = reduceMotion ? 0 : Math.cos(t * s.swayFreq * 0.8 + s.phase) * (s.swayAmp * 0.5);
+
+        const twinkle = reduceMotion
+          ? 0.6
+          : 0.35 + 0.55 * (Math.sin(t * 0.0006 * s.speed + s.phase) ** 2);
+
         ctx.beginPath();
-        ctx.fillStyle = `rgba(${color}, ${twinkle * 0.8})`;
-        ctx.arc(s.x, s.y, s.r, 0, Math.PI * 2);
+        ctx.fillStyle = `rgba(${color}, ${twinkle * 0.75})`;
+        ctx.arc(s.x + swayX, s.y + swayY, s.r, 0, Math.PI * 2);
         ctx.fill();
       }
       if (enabled && !reduceMotion) raf = requestAnimationFrame(draw);
