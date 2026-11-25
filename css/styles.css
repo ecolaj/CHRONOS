@@ -260,7 +260,7 @@ body[data-theme="granate"] {
   border: none; background: transparent; color: var(--text-muted);
   font-family: 'Sora', sans-serif; font-size: 13px; font-weight: 500;
   padding: 9px 18px; border-radius: 999px; cursor: pointer;
-  transition: background .25s ease, color .25s ease;
+  transition: background .65s ease, color .65s ease;
 }
 .segmented-btn.active {
   background: var(--accent-a); color: var(--bg);

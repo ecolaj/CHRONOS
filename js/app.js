@@ -15,12 +15,30 @@
 
   function loadSettings() {
     try {
-      const raw = localStorage.getItem(STORAGE_KEY) || localStorage.getItem('orbita-settings-v1');
-      return raw ? JSON.parse(raw) : {};
+      const candidateKeys = [
+        STORAGE_KEY,
+        'orbita-settings-v1',
+        'chronos-settings',
+        'orbita-settings'
+      ];
+      for (const key of candidateKeys) {
+        const raw = localStorage.getItem(key);
+        if (raw) {
+          try {
+            const parsed = JSON.parse(raw);
+            if (parsed && typeof parsed === 'object') return parsed;
+          } catch (_) {}
+        }
+      }
+      return {};
     } catch (e) { return {}; }
   }
   function saveSettings() {
-    try { localStorage.setItem(STORAGE_KEY, JSON.stringify(settings)); } catch (e) {}
+    try {
+      const serialized = JSON.stringify(settings);
+      localStorage.setItem(STORAGE_KEY, serialized);
+      localStorage.setItem('orbita-settings-v1', serialized);
+    } catch (e) {}
   }
 
   /* ---------------- Themes ---------------- */
@@ -134,6 +152,15 @@
   let targetVal = 0;
   let animRafId = null;
 
+  function updatePercentDisplay(val) {
+    const pct = val * 100;
+    const p = settings.precision;
+    const [intPart, decPart] = pct.toFixed(p).split('.');
+    percentValue.innerHTML = p > 0
+      ? `${intPart}<span class="percent-decimals">.${decPart}</span><span class="percent-sign">%</span>`
+      : `${intPart}<span class="percent-sign">%</span>`;
+  }
+
   function updateOrbitVisuals(val) {
     progressArc.style.strokeDashoffset = CIRC * (1 - val);
     if (mover) {
@@ -143,21 +170,31 @@
 
   function animateOrbitTo(newTargetVal) {
     const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+    // If an animation is already running toward essentially the same target
+    // (e.g., 1s tick during a mode switch), update targetVal without restarting.
+    if (animRafId !== null && Math.abs(newTargetVal - targetVal) < 0.001) {
+      targetVal = newTargetVal;
+      return;
+    }
+
     targetVal = newTargetVal;
 
     // First load or reduced motion: update immediately
     if (currentVal === null || reduceMotion) {
       currentVal = targetVal;
       updateOrbitVisuals(currentVal);
+      updatePercentDisplay(currentVal);
       return;
     }
 
     const diff = Math.abs(currentVal - targetVal);
 
     // Minor update (standard 1s interval tick), set directly without animation overhead
-    if (diff < 0.001) {
+    if (diff < 0.001 && animRafId === null) {
       currentVal = targetVal;
       updateOrbitVisuals(currentVal);
+      updatePercentDisplay(currentVal);
       return;
     }
 
@@ -165,25 +202,29 @@
 
     const startVal = currentVal;
     const startTime = performance.now();
-    const duration = 450; // Smooth 450ms transition
+    const duration = 1200; // 25% slower than 900ms for a calmer, more deliberate glide
 
-    function easeOutCubic(x) {
-      return 1 - Math.pow(1 - x, 3);
+    function easeInOutCubic(x) {
+      return x < 0.5
+        ? 4 * x * x * x
+        : 1 - Math.pow(-2 * x + 2, 3) / 2;
     }
 
     function step(now) {
       const elapsed = now - startTime;
       const progress = Math.min(1, elapsed / duration);
-      const eased = easeOutCubic(progress);
+      const eased = easeInOutCubic(progress);
 
       currentVal = startVal + (targetVal - startVal) * eased;
       updateOrbitVisuals(currentVal);
+      updatePercentDisplay(currentVal);
 
       if (progress < 1) {
         animRafId = requestAnimationFrame(step);
       } else {
         currentVal = targetVal;
         updateOrbitVisuals(currentVal);
+        updatePercentDisplay(currentVal);
         animRafId = null;
       }
     }
@@ -197,15 +238,6 @@
     const { fraction, totalDays, elapsedDays, remainingDays, year } = getYearProgress(now);
 
     const isElapsed = settings.mode === 'elapsed';
-    const displayFraction = isElapsed ? fraction : 1 - fraction;
-    const pct = displayFraction * 100;
-
-    // number
-    const p = settings.precision;
-    const [intPart, decPart] = pct.toFixed(p).split('.');
-    percentValue.innerHTML = p > 0
-      ? `${intPart}<span class="percent-decimals">.${decPart}</span><span class="percent-sign">%</span>`
-      : `${intPart}<span class="percent-sign">%</span>`;
 
     modeCaption.textContent = isElapsed
       ? `del ${year} transcurrido`
@@ -431,10 +463,17 @@
   renderAll();
   setInterval(renderAll, 1000);
 
-  /* ---------------- Service worker ---------------- */
+  /* ---------------- Service worker cleanup ---------------- */
   if ('serviceWorker' in navigator) {
-    window.addEventListener('load', () => {
-      navigator.serviceWorker.register('sw.js').catch(() => {});
-    });
+    navigator.serviceWorker.getRegistrations().then((registrations) => {
+      for (const reg of registrations) {
+        reg.unregister().catch(() => {});
+      }
+    }).catch(() => {});
+  }
+  if ('caches' in window) {
+    caches.keys().then((keys) => {
+      for (const key of keys) caches.delete(key).catch(() => {});
+    }).catch(() => {});
   }
 })();
